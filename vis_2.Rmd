@@ -1,0 +1,185 @@
+---
+title: "vis 2"
+author: "David"
+date: "2024-10-01"
+output: html_document
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(patchwork)
+```
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = case_match(
+      id, 
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y =tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Minimum Temperature(C)",
+    y = "Maximum Temperature(C)",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  )
+```
+
+
+Look at scale of axis
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y =tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Minimum Temperature(C)",
+    y = "Maximum Temperature(C)",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  ) +
+  scale_x_continuous(
+    breaks = c(-15, 0, 20),
+    labels = c("-15", "0", "20")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 30),
+    transform = "sqrt",
+    position = "right"
+  )
+```
+
+Look at color
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y =tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Minimum Temperature(C)",
+    y = "Maximum Temperature(C)",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  ) +
+  scale_x_continuous(
+    breaks = c(-15, 0, 20),
+    labels = c("-15", "0", "20")
+  ) +
+  scale_y_continuous(
+    limits = c(0, 30)
+  ) +
+  scale_color_hue(h = c(100, 400))
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y =tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Minimum Temperature(C)",
+    y = "Maximum Temperature(C)",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  ) +
+  viridis::scale_color_viridis(
+    name = "Location",  # alphabetic order
+    discrete = TRUE
+  )
+```
+
+## Themes
+
+```{r}
+ggp_scatterplot =
+  weather_df |>
+  ggplot(aes(x = tmin, y =tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Minimum Temperature(C)",
+    y = "Maximum Temperature(C)",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  ) +
+  viridis::scale_color_viridis(
+    discrete = TRUE
+  )
+
+ggp_scatterplot +
+  theme(legend.position = "bottom")
+
+ggp_scatterplot +
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+ggp_scatterplot + 
+  theme_classic() + 
+  theme(legend.position = "bottom")
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = date, y =tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = 0.3) +
+  geom_smooth(se = TRUE) +
+  labs(
+    tittle = "Temperature scatterplot",
+    x = "Date",
+    y = "Maximum Temperature(C)",
+    size = "Precipitation",
+    color = "location",
+    caption = "Weather data taken from rnoaa package for three stations."
+  ) +
+  viridis::scale_color_viridis(
+    discrete = TRUE
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+```
+
+```{r}
+central_park_df =
+  weather_df |>
+  filter(name == "CentralPark_NY")
+
+molokai_df =
+  weather_df |>
+  filter(name == "Molokai_HI")
+
+molokai_df |>
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point() +
+  geom_line(data = central_park_df)
+
+```
+
+## Multiple panels
+```{r}
+weather_df |>
+  ggplot(aes(x= tmax, fill = name)) +
+  geom_density() +
+  facet_grid(. ~ name)
+```
+
+```{r}
+
+```
+

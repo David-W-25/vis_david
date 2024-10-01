@@ -42,13 +42,116 @@ ggp_weather_scatterplot =
 ggp_weather_scatterplot
 ```
 
+## fancier scatterplot
 ```{r}
+ggp_colored_weather_scatterplot =
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.3, size = 0.8) +
+  geom_smooth(se = FALSE)
 
+ggp_colored_weather_scatterplot
+```
+
+use facet
+```{r}
+ggp_facet_weather_scatterplot =
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+
+ggp_facet_weather_scatterplot
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
 ```
 
 
+```{r}
+weather_df |>
+  filter(name == "CentralPark_NY") |>
+  mutate(
+    tmax_f = tmax * 9 / 5 + 32,
+    tmin_f = tmin * 9 / 5 + 32
+  ) |>
+  ggplot(aes(x = tmin_f, y = tmax_f)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = TRUE)
+```
 
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
 
+```{r}
+weather_df |>
+  ggplot(aes(x = tmax, fill = name)) + 
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_histogram(position = "dodge", binwidth = 2)
+#dodge could resolve lapping issue
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = 0.3, adjust = 0.5, color = "blue")
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_boxplot()
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin(alpha = 0.5) +
+  stat_summary(fun = "median", color = "black")
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = name)) +
+  geom_density_ridges(scale = 0.8)
+```
+
+```{r}
+weather_df |>
+ggplot(aes(x = prcp)) +
+  geom_density(aes(fill = name), alpha = 0.5)
+
+weather_df |>
+  ggplot(aes(x = name, y = prcp)) +
+  geom_boxplot()
+```
+
+## saving plot
+```{r}
+ggp_facet_weather_scatterplot =
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+
+ggsave("ggp_facet_weather_scatterplot.pdf", ggp_facet_weather_scatterplot, width = 8, height = 6)
+```
 
 
 
