@@ -34,11 +34,17 @@ weather_df =
 
 Making our first plot
 ```{r}
-weather_df |>
-ggplot(aes(x = tmin, y = tmax)) +
+ggp_weather_scatterplot =
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
   geom_point()
+
+ggp_weather_scatterplot
 ```
 
+```{r}
+
+```
 
 
 
